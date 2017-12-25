@@ -33,10 +33,23 @@ app.route('/_api/package.json')
     });
   });
   
-app.route('/')
-    .get(function(req, res) {
-		  res.sendFile(process.cwd() + '/views/index.html');
-    })
+app.route('/').get(function(req, res) {
+  //res.send(req.headers);
+  let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  let lang = req.headers['accept-language'];
+  let soft = req.headers['user-agent'];
+  ip = ip.split(',')[0];
+  lang = lang.split(',')[0];
+  //soft = soft.match(/\(.*\)/g);
+  soft = soft.slice(soft.indexOf('(') + 1, soft.indexOf(')'));
+  //res.send(ip);
+  res.send({
+    ip: ip,
+    language: lang,
+    software: soft
+  });
+  res.end();
+})
 
 // Respond not found to all the wrong routes
 app.use(function(req, res, next){
